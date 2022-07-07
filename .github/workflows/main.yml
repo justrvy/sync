@@ -1,0 +1,73 @@
+name: Sync
+
+on:
+  schedule:
+    - cron:  '0 18 * * 4'
+  workflow_dispatch:  
+  
+jobs:
+  whoogle-sync:
+    runs-on: ubuntu-latest
+    env:
+      INPUT_GITHUB_TOKEN: ${{ secrets.PAT }}
+      INPUT_UPSTREAM_REPOSITORY: benbusby/whoogle-search
+      TARGET_REPOSITORY: justrvy/whgle
+      INPUT_TARGET_BRANCH: main
+      INPUT_UPSTREAM_BRANCH: main
+    steps:
+      - name: Sync
+        run: |
+          upstream_repo="https://${GITHUB_ACTOR}:${INPUT_GITHUB_TOKEN}@github.com/${INPUT_UPSTREAM_REPOSITORY}.git"
+          upstream_dir=${INPUT_UPSTREAM_REPOSITORY##*/}
+          target_repo="https://${GITHUB_ACTOR}:${INPUT_GITHUB_TOKEN}@github.com/${TARGET_REPOSITORY}.git"
+
+          git clone "${upstream_repo}" -b "${INPUT_UPSTREAM_BRANCH}" --single-branch
+          cd "${upstream_dir}"
+          # git rm -r -f --cached .github
+          # git config user.name github-actions
+          # git config user.email github-actions@github.com
+          # git commit -m "rm workflows"
+          git push --force --follow-tags --tags "${target_repo}" "${INPUT_UPSTREAM_BRANCH}:${INPUT_TARGET_BRANCH}"
+          rm -rf "../${upstream_dir}"                
+
+    searx-sync:
+    runs-on: ubuntu-latest
+    needs: whoogle-sync
+    env:
+      INPUT_GITHUB_TOKEN: ${{ secrets.PAT }}
+      INPUT_UPSTREAM_REPOSITORY: yellowhat/searx-heroku
+      TARGET_REPOSITORY: justrvy/seax
+      INPUT_TARGET_BRANCH: main
+      INPUT_UPSTREAM_BRANCH: main
+    steps:
+      - name: Sync
+        run: |
+          upstream_repo="https://${GITHUB_ACTOR}:${INPUT_GITHUB_TOKEN}@github.com/${INPUT_UPSTREAM_REPOSITORY}.git"
+          upstream_dir=${INPUT_UPSTREAM_REPOSITORY##*/}
+          target_repo="https://${GITHUB_ACTOR}:${INPUT_GITHUB_TOKEN}@github.com/${TARGET_REPOSITORY}.git"
+
+          git clone "${upstream_repo}" -b "${INPUT_UPSTREAM_BRANCH}" --single-branch
+          cd "${upstream_dir}"
+          git push --force --follow-tags --tags "${target_repo}" "${INPUT_UPSTREAM_BRANCH}:${INPUT_TARGET_BRANCH}"
+          rm -rf "../${upstream_dir}"    
+
+    searxng-sync:
+    runs-on: ubuntu-latest
+    needs: [whoogle-sync,searx-sync]
+    env:
+      INPUT_GITHUB_TOKEN: ${{ secrets.PAT }}
+      INPUT_UPSTREAM_REPOSITORY: yellowhat/searx-heroku
+      TARGET_REPOSITORY: justrvy/seax
+      INPUT_TARGET_BRANCH: searxng
+      INPUT_UPSTREAM_BRANCH: searxng
+    steps:
+      - name: Sync
+        run: |
+          upstream_repo="https://${GITHUB_ACTOR}:${INPUT_GITHUB_TOKEN}@github.com/${INPUT_UPSTREAM_REPOSITORY}.git"
+          upstream_dir=${INPUT_UPSTREAM_REPOSITORY##*/}
+          target_repo="https://${GITHUB_ACTOR}:${INPUT_GITHUB_TOKEN}@github.com/${TARGET_REPOSITORY}.git"
+
+          git clone "${upstream_repo}" -b "${INPUT_UPSTREAM_BRANCH}" --single-branch
+          cd "${upstream_dir}"
+          git push --force --follow-tags --tags "${target_repo}" "${INPUT_UPSTREAM_BRANCH}:${INPUT_TARGET_BRANCH}"
+          rm -rf "../${upstream_dir}"  
