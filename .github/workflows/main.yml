@@ -23,10 +23,10 @@ jobs:
 
           git clone "${upstream_repo}" -b "${INPUT_UPSTREAM_BRANCH}" --single-branch
           cd "${upstream_dir}"
-          # git rm -r -f --cached .github
-          # git config user.name github-actions
-          # git config user.email github-actions@github.com
-          # git commit -m "rm workflows"
+          git rm -r -f --cached .github
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git commit -m "rm workflows"
           git push --force --follow-tags --tags "${target_repo}" "${INPUT_UPSTREAM_BRANCH}:${INPUT_TARGET_BRANCH}"
           rm -rf "../${upstream_dir}"                
 
