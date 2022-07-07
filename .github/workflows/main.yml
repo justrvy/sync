@@ -30,8 +30,8 @@ jobs:
           git push --force --follow-tags --tags "${target_repo}" "${INPUT_UPSTREAM_BRANCH}:${INPUT_TARGET_BRANCH}"
           rm -rf "../${upstream_dir}"                
 
-    searx-sync:
-    runs-on: ubuntu-latest
+  searx-sync:
+    runs-on: ubuntu-latest 
     needs: whoogle-sync
     env:
       INPUT_GITHUB_TOKEN: ${{ secrets.PAT }}
@@ -51,7 +51,7 @@ jobs:
           git push --force --follow-tags --tags "${target_repo}" "${INPUT_UPSTREAM_BRANCH}:${INPUT_TARGET_BRANCH}"
           rm -rf "../${upstream_dir}"    
 
-    searxng-sync:
+  searxng-sync:
     runs-on: ubuntu-latest
     needs: [whoogle-sync,searx-sync]
     env:
